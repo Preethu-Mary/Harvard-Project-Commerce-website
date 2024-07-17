@@ -1,0 +1,30 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Watchlist</h2><br>
+    <div class="container-fluid">
+        <div class="row">
+            {% if listings %}
+                {% for listing in listings %}
+                    <div class="col-sm-3 mb-4" >
+                        <div class="card" style="width:100%;">
+                            <img src="{{ listing.imageUrl }}" class="card-img-top" alt="{{listing.title}}" style="height:200px; ">
+                            <div class="card-body">
+                                <h5 class="card-title">{{listing.title}}</h5>
+                                <p class="card-text">{{ listing.description|slice:":30" }}{% if listing.description|length > 30 %}...{% endif %}</p>
+                                <p class="card-text"><b>Current Bid: ${{ listing.currentPrice|floatformat:2 }}</b></p>
+                                <a href="{% url 'listing' id=listing.id %}" class="btn btn-primary">View product</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p><i>You have 0 items in your watchlist.</i></p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block count %}
+{{ count }}
+{% endblock %}

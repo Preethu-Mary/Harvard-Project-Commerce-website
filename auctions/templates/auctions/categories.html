@@ -1,0 +1,18 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Categories</h2><br>
+    <div>
+        <ul class="list-group">
+            {% for category in categories %}
+                <li class="list-group-item"><a class="nav-link" href="{% url 'categoryPage' category %}">{{category}}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
+
+{% if user.is_authenticated %}
+    {% block count %}
+        {{ count }}
+    {% endblock %}
+{% endif %}

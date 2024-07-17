@@ -1,0 +1,133 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div>
+    {% if message %}
+        {% if BidIslarger %}
+            <div class="alert alert-success" role="alert">
+                {{message}}
+            </div>
+        {% else %}
+            <div class="alert alert-danger" role="alert">
+                {{message}}
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+<div>
+    {% if not listing.isActive and user == listing.currentPrice.user and user != listing.owner %}
+        <div class="alert alert-success" role="alert">
+            Congratulations! You won the auction.
+        </div>
+    {% endif %}
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div style="display: flex; align-items: flex-end;">
+            <h2 style="margin: 20px;">{{ listing.title }}</h2>
+        </div>
+        <img src="{{ listing.imageUrl }}" alt="{{ listing.title }}" style="height: 300px; margin: 20px;">
+        <p  style="margin: 20px;">{{ listing.description }}</p>
+    </div>
+
+    <div class="col-md-5" style="display: flex; flex-direction: column; justify-content: center; left: 20%;">
+        <table class="table" style="margin-top: 12%;">
+            <tbody>
+                <tr>
+                    <td><h4>Details</h4></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><h6>Starting Bid:</h6></td>
+                    <td>${{ listing.startingPrice|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td><h6>Current Bid:</h6></td>
+                    <td>${{ listing.currentPrice|floatformat:2 }}</td>
+                </tr>
+                <tr>
+                    <td><h6>Listed by:</h6></td>
+                    <td>{{ listing.owner }}</td>
+                </tr>
+                <tr>
+                    <td><h6>Category:</h6></td>
+                    <td>{{ listing.category }}</td>
+                </tr>
+                <tr>
+                    <td><h6>Status:</h6></td>
+                    <td>{% if listing.isActive %} Active {% else %} Listing is closed {% endif %}</td>
+                </tr>
+              </tbody>
+        </table>
+        <div style="display: flex;">
+            {% if user.is_authenticated %}
+                {% if isOwner and listing.isActive %}
+                    <form action="{% url 'closelisting' id=listing.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Close listing</button>
+                    </form>
+                {% endif %}
+
+                {% if IsInWatchlist %}
+                    <form action="{% url 'removeitem' id=listing.id %}" method="POST" style="margin-left: 10px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Remove from watchlist</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'additem' id=listing.id %}" method="POST" style="margin-left: 10px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary btn-sm">Add to watchlist</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div id="Bid" style="margin: 20px;">
+    {% if user.is_authenticated %}
+        <form action="{% url 'addbid' id=listing.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <h6>Your Bid:</h6>
+                <div class="input-group">
+                    <input type="number" min="0" class="form-control" id="bidInput" name="bid" placeholder="Bid amount">
+                    <button type="submit" class="btn btn-primary">Place Bid</button>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+</div>
+
+<div id="comments" style="margin: 20px;">
+    <h6>Comments</h6>
+    {% if user.is_authenticated %}
+        <form action="{% url 'addcomment' id=listing.id %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <div class="input-group">
+                    <textarea class="form-control" name="comment" placeholder="Add a comment"></textarea>
+                    <button type="submit" class="btn btn-warning">Add</button>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+    {% if comments %}
+        <ul class="list-group list-group-flush mt-3" style="font-size: 14px;">
+            {% for comment in comments %}
+                <li class="list-group-item">
+                    <b>{{ comment.user }}</b>: {{ comment.message }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <i>No comments yet.</i>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% if user.is_authenticated %}
+    {% block count %}
+        {{ count }}
+    {% endblock %}
+{% endif %}
