@@ -1,1 +1,1 @@
-Web application. eBay-like e-commerce auction site. Designed and implemented as part of Harvard's CS50W. Written in Python. Utilizes the Django and Bootstrap frameworks.
+Developed a web application resembling an eBay-like e-commerce auction site. Designed and implemented as part of Harvard's CS50W course. Written in Python, utilizing the Django and Bootstrap frameworks.
